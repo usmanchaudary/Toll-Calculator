@@ -9,6 +9,12 @@ namespace SmashCloudAssignment.Controllers
     public class TollCalculationController : ControllerBase
     {
         private static List<EntryData> entryDataList = new List<EntryData>();
+        private readonly TollRoad _tollRoad;
+        public TollCalculationController(TollRoad tollRoad)
+        {
+            _tollRoad = tollRoad;
+        }
+
 
         [HttpPost("EntryPointData")]
         public async Task<IActionResult> EntryData([FromBody] EntryData entryData) //EntryData --> InterChange :string, NumberPlate:string, DateTime:string
@@ -16,7 +22,6 @@ namespace SmashCloudAssignment.Controllers
             entryDataList.Add(entryData);
             return Ok(entryData);
         }
-
 
 
 
@@ -29,16 +34,16 @@ namespace SmashCloudAssignment.Controllers
                 return BadRequest("Invalid Number Plate");
             }
             var (discount, baseRate, distanceBreakDown, totalToBeCharged) = CalculateDistanceAmongPoints(entryData.InterChange, exitData.InterChange, entryData.DateTime, exitData.NumberPlate);
-            return Ok(new {baseRate, discount, distanceBreakDown, totalToBeCharged});
+            return Ok(new { baseRate, discount, distanceBreakDown, totalToBeCharged });
         }
 
 
         #region Helper Methods
 
-        private (double discount, double baseRate, double distanceBreakDown, double totalToBeCharged) CalculateDistanceAmongPoints(string entryPoint1,string exitPoint, DateTime entryDate, string plateNumber)
+        private (double discount, double baseRate, double distanceBreakDown, double totalToBeCharged) CalculateDistanceAmongPoints(string entryPoint1, string exitPoint, DateTime entryDate, string plateNumber)
         {
-            var tollRoad = new TollRoad();
-            return tollRoad.CalculateToll(entryPoint1, exitPoint, entryDate, plateNumber);
+            
+            return _tollRoad.CalculateToll(entryPoint1, exitPoint, entryDate, plateNumber);
         }
 
         #endregion
